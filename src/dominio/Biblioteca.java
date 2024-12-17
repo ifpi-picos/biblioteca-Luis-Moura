@@ -93,8 +93,8 @@ public class Biblioteca {
       emprestimos.add(emprestimo);
       usuario.adicionarEmprestimo(emprestimo);
       livro.setEmprestado(true);
+    } else {
+      System.out.println("\nEste livro já esta emprestado!\n");
     }
-    
-    System.out.println("\nEste livro já esta emprestado!\n");
   }
 }

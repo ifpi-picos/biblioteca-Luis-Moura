@@ -136,6 +136,8 @@ public class App {
 
           if (livro != null) {
             biblioteca.pegarLivroEmprestado(usuario, livro);
+
+            System.out.println("\nLivro pego");
           } else {
             System.out.println("\nLivro não encontrado.");
           }

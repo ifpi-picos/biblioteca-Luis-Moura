@@ -22,13 +22,21 @@ public class Biblioteca {
   }
 
   public Livro listarLivroPorISBN(String ISBN) {
+    Livro livroSelecionado = null;
+    
     for (int i = 0; i < livros.size(); i++) {
-      if (livros.get(i).getISBN() == ISBN) {
-        return livros.get(i);
+      if (livros.get(i).getISBN().equals(ISBN)) {
+        livroSelecionado = livros.get(i);
+        break;
       }
     }
 
+    if (livroSelecionado != null) {
+      return livroSelecionado;
+    }
+
     return null;
+    
   }
   
   public List<Livro> listarLivrosEmprestados() {

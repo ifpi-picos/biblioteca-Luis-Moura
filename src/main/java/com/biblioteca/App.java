@@ -2,13 +2,16 @@ package com.biblioteca;
 
 import java.util.Scanner;
 
+import com.biblioteca.controller.LivroController;
 import com.biblioteca.controller.UsuarioController;
+import com.biblioteca.model.Livro;
 import com.biblioteca.model.Usuario;
 
 public class App {
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     UsuarioController usuarioController = new UsuarioController();
+    LivroController livroController = new LivroController();
 
     // Menu de opções
     while (true) {
@@ -20,6 +23,7 @@ public class App {
       System.out.println("2. Listar todos os usuários");
       System.out.println("3. Atualizar usuário");
       System.out.println("4. Deletar usuário");
+      System.out.println("5. Cadastrar livro");
       System.out.println("==============================");
       System.out.print("Escolha uma opção: ");
 
@@ -74,6 +78,27 @@ public class App {
 
           usuarioController.deletarUsuario(id);
           System.out.println("\nUsuário deletado com sucesso!");
+          break;
+
+        case 5:
+          System.out.println("\n=== Cadastrar Livro ===");
+          System.out.println("Digite o ISBN do livro: ");
+          String ISBN = scanner.nextLine();
+          System.out.println("Digite o nome do autor: ");
+          String autor = scanner.nextLine();
+          System.out.println("Digite o titulo do livro: ");
+          String titulo = scanner.nextLine();
+          System.out.println("Digite o nome da editora: ");
+          String editora = scanner.nextLine();
+          System.out.println("Digite o ano de lançamento do livro: ");
+          int ano = scanner.nextInt();
+          scanner.nextLine();
+
+          Livro novoLivro = new Livro(ISBN, autor, titulo, editora, ano, false);
+
+          livroController.cadastrarLivro(novoLivro);
+          System.out.println("\nLivro cadastrado com sucesso!");
+
           break;
 
         // case 1:

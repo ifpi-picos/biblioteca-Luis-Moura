@@ -1,0 +1,6 @@
+com/biblioteca/model/Livro.class
+com/biblioteca/App.class
+com/biblioteca/model/Biblioteca.class
+main/java/com/biblioteca/connection/Connection.class
+com/biblioteca/model/Emprestimo.class
+com/biblioteca/model/Usuario.class

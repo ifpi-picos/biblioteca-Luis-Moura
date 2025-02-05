@@ -1,10 +1,12 @@
+package com.biblioteca;
+
 import java.util.List;
 import java.util.Scanner;
 
-import dominio.Biblioteca;
-import dominio.Emprestimo;
-import dominio.Livro;
-import dominio.Usuario;
+import com.biblioteca.model.Biblioteca;
+import com.biblioteca.model.Emprestimo;
+import com.biblioteca.model.Livro;
+import com.biblioteca.model.Usuario;
 
 public class App {
   public static void main(String[] args) {
@@ -114,7 +116,8 @@ public class App {
           Usuario usuario = new Usuario(nomeUsuario, cpfUsuario, emailUsuario);
           List<Emprestimo> historicoEmprestimos = biblioteca.listarHistoricoDeEmprestimosDoUsuario(usuario);
           for (Emprestimo e : historicoEmprestimos) {
-            System.out.println("Livro: " + e.getLivro().getTitulo() + ", Data de Empréstimo: " + e.getDataEmprestimo() + ", Data de Devolução: " + e.getDataDevolucao());
+            System.out.println("Livro: " + e.getLivro().getTitulo() + ", Data de Empréstimo: " + e.getDataEmprestimo()
+                + ", Data de Devolução: " + e.getDataDevolucao());
           }
           break;
 

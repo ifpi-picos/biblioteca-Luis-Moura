@@ -1,4 +1,4 @@
-package dominio;
+package com.biblioteca.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

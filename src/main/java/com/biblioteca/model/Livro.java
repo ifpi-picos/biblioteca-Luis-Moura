@@ -1,4 +1,4 @@
-package dominio;
+package com.biblioteca.model;
 
 public class Livro {
   private final String ISBN;

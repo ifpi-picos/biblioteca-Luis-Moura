@@ -1,4 +1,4 @@
-package dominio;
+package com.biblioteca.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,10 @@ public class Usuario {
 
   public String getEmail() {
     return email;
+  }
+
+  public List<Emprestimo> getHistoricoEmprestimos() {
+    return historicoEmprestimos;
   }
 
   public void adicionarEmprestimo(Emprestimo emprestimo) {

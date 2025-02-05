@@ -17,6 +17,9 @@ public class App {
       System.out.println("==============================");
       System.out.println("0. Sair do sistema");
       System.out.println("1. Cadastrar usuário");
+      System.out.println("2. Listar todos os usuários");
+      System.out.println("3. Atualizar usuário");
+      System.out.println("4. Deletar usuário");
       System.out.println("==============================");
       System.out.print("Escolha uma opção: ");
 
@@ -36,6 +39,41 @@ public class App {
           Usuario novoUsuario = new Usuario(nomeUsuario, cpfUsuario, emailUsuario);
           usuarioController.cadastrarUsuario(novoUsuario);
           System.out.println("\nUsuário cadastrado com sucesso!");
+          break;
+
+        case 2:
+          System.out.println("\n=== Todos os Usuários ===");
+          usuarioController.listarUsuarios();
+          break;
+
+        case 3:
+          System.out.println("\n=== Atualizar Usuário ===");
+
+          System.out.print("Digite o ID do usuário a ser atualizado: ");
+          int idUsuario = scanner.nextInt();
+          scanner.nextLine(); // Consumir a nova linha
+
+          System.out.print("Digite o novo nome do usuário: ");
+          nomeUsuario = scanner.nextLine();
+          System.out.print("Digite o novo CPF do usuário: ");
+          cpfUsuario = scanner.nextLine();
+          System.out.print("Digite o novo email do usuário: ");
+          emailUsuario = scanner.nextLine();
+
+          Usuario usuarioAtualizado = new Usuario(nomeUsuario, cpfUsuario, emailUsuario);
+
+          usuarioController.atualizarUsuario(usuarioAtualizado, idUsuario);
+          System.out.println("\nUsuário atualizado com sucesso!");
+          break;
+
+        case 4:
+          System.out.println("\n=== Deletar Usuário ===");
+          System.out.print("Digite o ID do usuário a ser deletado: ");
+          int id = scanner.nextInt();
+          scanner.nextLine(); // Consumir a nova linha
+
+          usuarioController.deletarUsuario(id);
+          System.out.println("\nUsuário deletado com sucesso!");
           break;
 
         // case 1:

@@ -54,6 +54,31 @@ public class LivroDao {
     return livros;
   }
 
+  public Livro readByISBN(String ISBN) {
+    Livro livro = null;
+
+    String sql = "SELECT * FROM livro WHERE isbn = ?";
+    try {
+      var connection = DatabaseConnection.getConnection();
+
+      var preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, ISBN);
+
+      var resultSet = preparedStatement.executeQuery();
+
+      if (resultSet.next()) {
+        livro = new Livro(resultSet.getString("isbn"), resultSet.getString("autor"),
+            resultSet.getString("titulo"), resultSet.getString("editora"), resultSet.getInt("ano"),
+            resultSet.getBoolean("emprestado"));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    return livro;
+  }
+
   public void update(Livro livro) {
     String sql = "UPDATE livro SET autor = ?, titulo = ?, editora = ?, ano = ?, emprestado = ? WHERE isbn = ?";
 

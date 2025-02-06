@@ -24,21 +24,25 @@ public class App {
       System.out.println("3. Atualizar usuário");
       System.out.println("4. Deletar usuário");
       System.out.println("5. Cadastrar livro");
+      System.out.println("6. Listar todos os livros");
+      System.out.println("7. Atualizar livro");
       System.out.println("==============================");
       System.out.print("Escolha uma opção: ");
 
       int opcao = scanner.nextInt();
       scanner.nextLine(); // Consumir a nova linha
 
+      String nomeUsuario, cpfUsuario, emailUsuario, ISBN, autor, titulo, editora;
+
       switch (opcao) {
         case 1:
           System.out.println("\n=== Cadastrar Usuário ===");
           System.out.print("Digite o nome do usuário: ");
-          String nomeUsuario = scanner.nextLine();
+          nomeUsuario = scanner.nextLine();
           System.out.print("Digite o CPF do usuário: ");
-          String cpfUsuario = scanner.nextLine();
+          cpfUsuario = scanner.nextLine();
           System.out.print("Digite o email do usuário: ");
-          String emailUsuario = scanner.nextLine();
+          emailUsuario = scanner.nextLine();
 
           Usuario novoUsuario = new Usuario(nomeUsuario, cpfUsuario, emailUsuario);
           usuarioController.cadastrarUsuario(novoUsuario);
@@ -83,13 +87,13 @@ public class App {
         case 5:
           System.out.println("\n=== Cadastrar Livro ===");
           System.out.println("Digite o ISBN do livro: ");
-          String ISBN = scanner.nextLine();
+          ISBN = scanner.nextLine();
           System.out.println("Digite o nome do autor: ");
-          String autor = scanner.nextLine();
+          autor = scanner.nextLine();
           System.out.println("Digite o titulo do livro: ");
-          String titulo = scanner.nextLine();
+          titulo = scanner.nextLine();
           System.out.println("Digite o nome da editora: ");
-          String editora = scanner.nextLine();
+          editora = scanner.nextLine();
           System.out.println("Digite o ano de lançamento do livro: ");
           int ano = scanner.nextInt();
           scanner.nextLine();
@@ -100,6 +104,31 @@ public class App {
           System.out.println("\nLivro cadastrado com sucesso!");
 
           break;
+
+        case 6:
+            System.out.println("\n=== Todos os Livros ===");
+            livroController.listarLivros();
+            break;
+
+        case 7:
+            System.out.println("\n=== Atualizar Livro ===");
+            System.out.print("Digite o ISBN do livro a ser atualizado: ");
+            ISBN = scanner.nextLine();
+            System.out.print("Digite o novo nome do autor: ");
+            autor = scanner.nextLine();
+            System.out.print("Digite o novo titulo do livro: ");
+            titulo = scanner.nextLine();
+            System.out.print("Digite o novo nome da editora: ");
+            editora = scanner.nextLine();
+            System.out.print("Digite o novo ano de lançamento do livro: ");
+            ano = scanner.nextInt();
+            scanner.nextLine();
+
+            Livro livroAtualizado = new Livro(ISBN, autor, titulo, editora, ano, false);
+
+            livroController.atualizarLivro(livroAtualizado);
+            System.out.println("\nLivro atualizado com sucesso!");
+            break;
 
         // case 1:
         // // Cadastrar livro

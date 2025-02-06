@@ -18,13 +18,12 @@ public class UsuarioController {
 
   public void listarUsuarios() {
     ArrayList<Usuario> usuarios = usuarioDao.read();
-    for (int i = 0; i < usuarios.size(); i++) {
-      Usuario usuario = usuarios.get(i);
-      System.out.println("Nome: " + usuario.getNome());
-      System.out.println("CPF: " + usuario.getCpf());
-      System.out.println("Email: " + usuario.getEmail());
-      System.out.println();
-    }
+      for (Usuario usuario : usuarios) {
+          System.out.println("Nome: " + usuario.getNome());
+          System.out.println("CPF: " + usuario.getCpf());
+          System.out.println("Email: " + usuario.getEmail());
+          System.out.println();
+      }
   }
 
   public void atualizarUsuario(Usuario usuario, int id) {

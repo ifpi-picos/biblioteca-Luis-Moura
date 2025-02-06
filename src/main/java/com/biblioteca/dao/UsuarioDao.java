@@ -1,5 +1,6 @@
 package com.biblioteca.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.biblioteca.connection.DatabaseConnection;
@@ -45,6 +46,30 @@ public class UsuarioDao {
     }
 
     return usuarios;
+  }
+
+  public Usuario readById(int usuarioId) {
+    Usuario usuario = null;
+
+    String sql = "SELECT * FROM usuario WHERE id = ?";
+    try {
+      var connection = DatabaseConnection.getConnection();
+
+      var preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, usuarioId);
+
+      var resultSet = preparedStatement.executeQuery();
+
+      while (resultSet.next()) {
+        usuario = new Usuario(resultSet.getString("nome"), resultSet.getString("cpf"),
+            resultSet.getString("email"));
+      }
+    } catch (SQLException e) {
+      throw  new RuntimeException(e);
+    }
+
+    return usuario;
   }
 
   public void update(Usuario usuario, int id) {

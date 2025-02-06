@@ -26,6 +26,13 @@ public class UsuarioController {
       }
   }
 
+  public void listarUsuarioPorId(int id) {
+    Usuario usuario = usuarioDao.readById(id);
+    System.out.println("Nome: " + usuario.getNome());
+    System.out.println("CPF: " + usuario.getCpf());
+    System.out.println("Email: " + usuario.getEmail());
+  }
+
   public void atualizarUsuario(Usuario usuario, int id) {
     usuarioDao.update(usuario, id);
   }

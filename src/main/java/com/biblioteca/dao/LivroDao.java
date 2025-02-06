@@ -73,4 +73,19 @@ public class LivroDao {
         throw new RuntimeException(e);
     }
   }
+
+  public void delete(String isbn) {
+    String sql = "DELETE FROM livro WHERE isbn = ?";
+
+    try {
+      var connection = DatabaseConnection.getConnection();
+
+      var preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, isbn);
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
+  }
 }

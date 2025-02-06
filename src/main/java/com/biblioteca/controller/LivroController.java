@@ -30,4 +30,8 @@ public class LivroController {
   public void atualizarLivro(Livro livro) {
     livroDao.update(livro);
   }
+
+  public void deletarLivro(String isbn) {
+    livroDao.delete(isbn);
+  }
 }

@@ -15,12 +15,18 @@ public class UsuarioDao {
         String sql = "INSERT INTO usuario (nome, cpf, email) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, usuario.getNome());
             preparedStatement.setString(2, usuario.getCpf());
             preparedStatement.setString(3, usuario.getEmail());
             preparedStatement.executeUpdate();
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    usuario.setId(generatedKeys.getInt(1)); // Atribui o ID gerado ao objeto
+                }
+            }
 
         } catch (SQLException e) {
             System.err.println("Erro ao cadastrar usuário: " + e.getMessage());
@@ -37,6 +43,7 @@ public class UsuarioDao {
 
             while (resultSet.next()) {
                 Usuario usuario = new Usuario(
+                        resultSet.getInt("id"),
                         resultSet.getString("nome"),
                         resultSet.getString("cpf"),
                         resultSet.getString("email")
@@ -62,6 +69,7 @@ public class UsuarioDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     usuario = new Usuario(
+                            resultSet.getInt("id"),
                             resultSet.getString("nome"),
                             resultSet.getString("cpf"),
                             resultSet.getString("email")

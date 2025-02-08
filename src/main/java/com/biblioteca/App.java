@@ -99,7 +99,7 @@ public class App {
         String nome = lerLinha("Digite o nome do usuário: ");
         String cpf = lerLinha("Digite o CPF do usuário: ");
         String email = lerLinha("Digite o email do usuário: ");
-        Usuario novoUsuario = new Usuario(nome, cpf, email);
+        Usuario novoUsuario = new Usuario(null, nome, cpf, email);
         usuarioController.cadastrarUsuario(novoUsuario);
         System.out.println("Usuário cadastrado com sucesso!");
     }
@@ -128,7 +128,7 @@ public class App {
         String nome = lerLinha("Digite o novo nome do usuário: ");
         String cpf = lerLinha("Digite o novo CPF do usuário: ");
         String email = lerLinha("Digite o novo email do usuário: ");
-        Usuario usuarioAtualizado = new Usuario(nome, cpf, email);
+        Usuario usuarioAtualizado = new Usuario(null, nome, cpf, email);
         usuarioController.atualizarUsuario(usuarioAtualizado, id);
         System.out.println("Usuário atualizado com sucesso!");
     }

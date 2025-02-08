@@ -9,16 +9,7 @@ public class DatabaseConnection {
   private static final String USER = "usuario";
   private static final String PASSWORD = "senha123";
 
-  private static Connection connection;
-
-  public static Connection getConnection() {
-    if (connection == null) {
-      try {
-        connection = DriverManager.getConnection(URL, USER, PASSWORD);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
-    return connection;
+  public static Connection getConnection() throws SQLException {
+    return DriverManager.getConnection(URL, USER, PASSWORD);
   }
 }

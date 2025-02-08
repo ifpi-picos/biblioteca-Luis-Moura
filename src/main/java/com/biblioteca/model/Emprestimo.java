@@ -1,14 +1,15 @@
 package com.biblioteca.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Emprestimo {
-  private final LocalDate dataEmprestimo;
-  private final LocalDate dataDevolucao;
+  private final Date dataEmprestimo;
+  private final Date dataDevolucao;
   private final Usuario usuario;
   private final Livro livro;
 
-  public Emprestimo(LocalDate dataEmprestimo, LocalDate dataDevolucao, Usuario usuario, Livro livro) {
+  public Emprestimo(Date dataEmprestimo, Date dataDevolucao, Usuario usuario, Livro livro) {
     if (dataEmprestimo == null || dataDevolucao == null || usuario == null || livro == null) {
       throw new IllegalArgumentException("Nenhum parâmetro pode ser nulo");
     }
@@ -18,11 +19,11 @@ public class Emprestimo {
     this.livro = livro;
   }
 
-  public LocalDate getDataEmprestimo() {
+  public Date getDataEmprestimo() {
     return dataEmprestimo;
   }
 
-  public LocalDate getDataDevolucao() {
+  public Date getDataDevolucao() {
     return dataDevolucao;
   }
 

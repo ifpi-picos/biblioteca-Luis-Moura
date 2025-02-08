@@ -27,13 +27,13 @@ public class LivroController {
         }
     }
 
-    public void listarLivroPorISBN(String ISBN) {
+    public Livro listarLivroPorISBN(String ISBN) {
         Livro livro = livroDao.readByISBN(ISBN);
-        System.out.println("Título: " + livro.getTitulo());
-        System.out.println("Autor: " + livro.getAutor());
-        System.out.println("Editora: " + livro.getEditora());
-        System.out.println("ISBN: " + livro.getISBN());
-
+//        System.out.println("Título: " + livro.getTitulo());
+//        System.out.println("Autor: " + livro.getAutor());
+//        System.out.println("Editora: " + livro.getEditora());
+//        System.out.println("ISBN: " + livro.getISBN());
+        return livro;
     }
 
     public void atualizarLivro(Livro livro) {

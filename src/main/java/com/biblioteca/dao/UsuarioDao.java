@@ -1,5 +1,8 @@
 package com.biblioteca.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -7,101 +10,100 @@ import com.biblioteca.connection.DatabaseConnection;
 import com.biblioteca.model.Usuario;
 
 public class UsuarioDao {
-  public void create(Usuario usuario) {
-    String sql = "INSERT INTO usuario (nome, cpf, email) VALUES (?, ?, ?)";
 
-    try {
-      var connection = DatabaseConnection.getConnection();
+    public void create(Usuario usuario) {
+        String sql = "INSERT INTO usuario (nome, cpf, email) VALUES (?, ?, ?)";
 
-      var preparedStatement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-      preparedStatement.setString(1, usuario.getNome());
-      preparedStatement.setString(2, usuario.getCpf());
-      preparedStatement.setString(3, usuario.getEmail());
-      preparedStatement.executeUpdate();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+            preparedStatement.setString(1, usuario.getNome());
+            preparedStatement.setString(2, usuario.getCpf());
+            preparedStatement.setString(3, usuario.getEmail());
+            preparedStatement.executeUpdate();
 
-  public ArrayList<Usuario> read() {
-    ArrayList<Usuario> usuarios = new ArrayList<>();
-
-    String sql = "SELECT * FROM usuario";
-    try {
-      var connection = DatabaseConnection.getConnection();
-
-      var preparedStatement = connection.prepareStatement(sql);
-
-      var resultSet = preparedStatement.executeQuery();
-
-      while (resultSet.next()) {
-        Usuario usuario = new Usuario(resultSet.getString("nome"), resultSet.getString("cpf"),
-            resultSet.getString("email"));
-
-        usuarios.add(usuario);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar usuário: " + e.getMessage());
+        }
     }
 
-    return usuarios;
-  }
+    public ArrayList<Usuario> read() {
+        ArrayList<Usuario> usuarios = new ArrayList<>();
+        String sql = "SELECT * FROM usuario";
 
-  public Usuario readById(int usuarioId) {
-    Usuario usuario = null;
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-    String sql = "SELECT * FROM usuario WHERE id = ?";
-    try {
-      var connection = DatabaseConnection.getConnection();
+            while (resultSet.next()) {
+                Usuario usuario = new Usuario(
+                        resultSet.getString("nome"),
+                        resultSet.getString("cpf"),
+                        resultSet.getString("email")
+                );
+                usuarios.add(usuario);
+            }
 
-      var preparedStatement = connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar usuários: " + e.getMessage());
+        }
 
-      preparedStatement.setInt(1, usuarioId);
-
-      var resultSet = preparedStatement.executeQuery();
-
-      while (resultSet.next()) {
-        usuario = new Usuario(resultSet.getString("nome"), resultSet.getString("cpf"),
-            resultSet.getString("email"));
-      }
-    } catch (SQLException e) {
-      throw  new RuntimeException(e);
+        return usuarios;
     }
 
-    return usuario;
-  }
+    public Usuario readById(int usuarioId) {
+        Usuario usuario = null;
+        String sql = "SELECT * FROM usuario WHERE id = ?";
 
-  public void update(Usuario usuario, int id) {
-    String sql = "UPDATE usuario SET nome = ?, cpf = ?, email = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-    try {
-      var connection = DatabaseConnection.getConnection();
+            preparedStatement.setInt(1, usuarioId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    usuario = new Usuario(
+                            resultSet.getString("nome"),
+                            resultSet.getString("cpf"),
+                            resultSet.getString("email")
+                    );
+                }
+            }
 
-      var preparedStatement = connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar usuário por ID: " + e.getMessage());
+        }
 
-      preparedStatement.setString(1, usuario.getNome());
-      preparedStatement.setString(2, usuario.getCpf());
-      preparedStatement.setString(3, usuario.getEmail());
-      preparedStatement.setInt(4, id);
-      preparedStatement.executeUpdate();
-    } catch (Exception e) {
-      e.printStackTrace();
+        return usuario;
     }
-  }
 
-  public void delete(int id) {
-    String sql = "DELETE FROM usuario WHERE id = ?";
+    public void update(Usuario usuario, int id) {
+        String sql = "UPDATE usuario SET nome = ?, cpf = ?, email = ? WHERE id = ?";
 
-    try {
-      var connection = DatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-      var preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, usuario.getNome());
+            preparedStatement.setString(2, usuario.getCpf());
+            preparedStatement.setString(3, usuario.getEmail());
+            preparedStatement.setInt(4, id);
+            preparedStatement.executeUpdate();
 
-      preparedStatement.setInt(1, id);
-      preparedStatement.executeUpdate();
-    } catch (Exception e) {
-      e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar usuário: " + e.getMessage());
+        }
     }
-  }
+
+    public void delete(int id) {
+        String sql = "DELETE FROM usuario WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao deletar usuário: " + e.getMessage());
+        }
+    }
 }

@@ -123,12 +123,12 @@ public class App {
             return;
         }
 
-        if(!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
+        if (!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
             System.out.println("\nCPF inválido!");
             return;
         }
 
-        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
             System.out.println("\nEmail inválido!");
             return;
         }
@@ -147,21 +147,37 @@ public class App {
         System.out.println("\n=== Listar Usuário por ID ===");
         int id = lerInteiro("Digite o ID do usuário: ");
         Usuario usuario = usuarioController.listarUsuarioPorId(id);
-        if (usuario != null) {
-            System.out.println("Nome: " + usuario.getNome());
-            System.out.println("CPF: " + usuario.getCpf());
-            System.out.println("Email: " + usuario.getEmail());
-        } else {
+
+        if (usuario == null) {
             System.out.println("Usuário não encontrado.");
+            return;
         }
+
+        System.out.println("Nome: " + usuario.getNome());
+        System.out.println("CPF: " + usuario.getCpf());
+        System.out.println("Email: " + usuario.getEmail());
     }
 
     private static void atualizarUsuario() {
         System.out.println("\n=== Atualizar Usuário ===");
         int id = lerInteiro("Digite o ID do usuário a ser atualizado: ");
+
+        Usuario usuario = usuarioController.listarUsuarioPorId(id);
+
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
+
         String nome = lerLinha("Digite o novo nome do usuário: ");
         String cpf = lerLinha("Digite o novo CPF do usuário: ");
         String email = lerLinha("Digite o novo email do usuário: ");
+
+        if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty()) {
+            System.out.println("Preencha todos os campos!");
+            return;
+        }
+
         Usuario usuarioAtualizado = new Usuario(null, nome, cpf, email);
         usuarioController.atualizarUsuario(usuarioAtualizado, id);
         System.out.println("Usuário atualizado com sucesso!");
@@ -170,17 +186,36 @@ public class App {
     private static void deletarUsuario() {
         System.out.println("\n=== Deletar Usuário ===");
         int id = lerInteiro("Digite o ID do usuário a ser deletado: ");
+
+        Usuario usuario = usuarioController.listarUsuarioPorId(id);
+
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
+
         usuarioController.deletarUsuario(id);
         System.out.println("Usuário deletado com sucesso!");
     }
 
     private static void cadastrarLivro() {
         System.out.println("\n=== Cadastrar Livro ===");
-        String isbn = lerLinha("Digite o ISBN do livro: ");
+        String isbn = lerLinha("Digite o ISBN do livro (format: 978-85-359-0277-2): ");
         String autor = lerLinha("Digite o nome do autor: ");
         String titulo = lerLinha("Digite o título do livro: ");
         String editora = lerLinha("Digite o nome da editora: ");
         int ano = lerInteiro("Digite o ano de lançamento do livro: ");
+
+        if (isbn.isEmpty() || autor.isEmpty() || titulo.isEmpty() || editora.isEmpty()) {
+            System.out.println("Preencha todos os campos!");
+            return;
+        }
+
+        if (isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
+            System.out.println("ISBN inválido!");
+            return;
+        }
+
         Livro novoLivro = new Livro(isbn, autor, titulo, editora, ano, false);
         livroController.cadastrarLivro(novoLivro);
         System.out.println("Livro cadastrado com sucesso!");
@@ -195,23 +230,39 @@ public class App {
         System.out.println("\n=== Listar Livro por ISBN ===");
         String isbn = lerLinha("Digite o ISBN do livro: ");
         Livro livro = livroController.listarLivroPorISBN(isbn);
-        if (livro != null) {
-            System.out.println("Título: " + livro.getTitulo());
-            System.out.println("Autor: " + livro.getAutor());
-            System.out.println("Editora: " + livro.getEditora());
-            System.out.println("ISBN: " + livro.getISBN());
-        } else {
+
+        if (livro == null) {
             System.out.println("Livro não encontrado.");
+            return;
         }
+
+        System.out.println("Título: " + livro.getTitulo());
+        System.out.println("Autor: " + livro.getAutor());
+        System.out.println("Editora: " + livro.getEditora());
+        System.out.println("ISBN: " + livro.getISBN());
     }
 
     private static void atualizarLivro() {
         System.out.println("\n=== Atualizar Livro ===");
         String isbn = lerLinha("Digite o ISBN do livro a ser atualizado: ");
+
+        Livro livro = livroController.listarLivroPorISBN(isbn);
+
+        if (livro == null) {
+            System.out.println("Livro não encontrado.");
+            return;
+        }
+
         String autor = lerLinha("Digite o novo nome do autor: ");
         String titulo = lerLinha("Digite o novo título do livro: ");
         String editora = lerLinha("Digite o novo nome da editora: ");
         int ano = lerInteiro("Digite o novo ano de lançamento do livro: ");
+
+        if (autor.isEmpty() || titulo.isEmpty() || editora.isEmpty()) {
+            System.out.println("Preencha todos os campos!");
+            return;
+        }
+
         Livro livroAtualizado = new Livro(isbn, autor, titulo, editora, ano, false);
         livroController.atualizarLivro(livroAtualizado);
         System.out.println("Livro atualizado com sucesso!");
@@ -220,6 +271,14 @@ public class App {
     private static void deletarLivro() {
         System.out.println("\n=== Deletar Livro ===");
         String isbn = lerLinha("Digite o ISBN do livro a ser deletado: ");
+
+        Livro livro = livroController.listarLivroPorISBN(isbn);
+
+        if (livro == null) {
+            System.out.println("Livro não encontrado.");
+            return;
+        }
+
         livroController.deletarLivro(isbn);
         System.out.println("Livro deletado com sucesso!");
     }
@@ -229,7 +288,6 @@ public class App {
         int usuarioId = lerInteiro("Digite o ID do usuário: ");
         String isbn = lerLinha("Digite o ISBN do livro: ");
 
-        // Busca o livro pelo ISBN
         Livro livro = livroController.listarLivroPorISBN(isbn);
         if (livro == null) {
             System.out.println("Livro não encontrado.");
@@ -240,14 +298,12 @@ public class App {
             return;
         }
 
-        // Busca o usuário pelo ID
         Usuario usuario = usuarioController.listarUsuarioPorId(usuarioId);
         if (usuario == null) {
             System.out.println("Usuário não encontrado.");
             return;
         }
 
-        // Define a data do empréstimo (hoje) e calcula a data de devolução
         Date dataEmprestimo = new Date();
         int dias = lerInteiro("Digite o número de dias para empréstimo: ");
         Calendar cal = Calendar.getInstance();
@@ -255,11 +311,9 @@ public class App {
         cal.add(Calendar.DAY_OF_MONTH, dias);
         Date dataDevolucao = cal.getTime();
 
-        // Cria o empréstimo e registra
         Emprestimo emprestimo = new Emprestimo(dataEmprestimo, dataDevolucao, usuario, livro);
         emprestimoController.realizarEmprestimo(emprestimo);
 
-        // Atualiza o status do livro para emprestado
         livro.setEmprestado(true);
         livroController.atualizarLivro(livro);
 

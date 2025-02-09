@@ -117,9 +117,25 @@ public class App {
         String nome = lerLinha("Digite o nome do usuário: ");
         String cpf = lerLinha("Digite o CPF do usuário: ");
         String email = lerLinha("Digite o email do usuário: ");
+
+        if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty()) {
+            System.out.println("\nPreencha todos os campos!");
+            return;
+        }
+
+        if(!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
+            System.out.println("\nCPF inválido!");
+            return;
+        }
+
+        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            System.out.println("\nEmail inválido!");
+            return;
+        }
+
         Usuario novoUsuario = new Usuario(null, nome, cpf, email);
         usuarioController.cadastrarUsuario(novoUsuario);
-        System.out.println("Usuário cadastrado com sucesso!");
+        System.out.println("\nUsuário cadastrado com sucesso!");
     }
 
     private static void listarUsuarios() {

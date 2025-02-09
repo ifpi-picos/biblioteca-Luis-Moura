@@ -178,6 +178,16 @@ public class App {
             return;
         }
 
+        if (!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
+            System.out.println("CPF inválido!");
+            return;
+        }
+
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            System.out.println("Email inválido!");
+            return;
+        }
+
         Usuario usuarioAtualizado = new Usuario(null, nome, cpf, email);
         usuarioController.atualizarUsuario(usuarioAtualizado, id);
         System.out.println("Usuário atualizado com sucesso!");
@@ -211,7 +221,7 @@ public class App {
             return;
         }
 
-        if (isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
+        if (!isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
             System.out.println("ISBN inválido!");
             return;
         }
@@ -260,6 +270,11 @@ public class App {
 
         if (autor.isEmpty() || titulo.isEmpty() || editora.isEmpty()) {
             System.out.println("Preencha todos os campos!");
+            return;
+        }
+
+        if (!isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
+            System.out.println("ISBN inválido!");
             return;
         }
 

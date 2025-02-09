@@ -84,6 +84,52 @@ public class LivroDao {
         return livro;
     }
 
+    public ArrayList<Livro> readLivrosEmprestados() {
+        ArrayList<Livro> livros = new ArrayList<>();
+        String sql = "SELECT * FROM livro WHERE emprestado = true";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Livro livro = new Livro(
+                        resultSet.getString("isbn"),
+                        resultSet.getString("autor"),
+                        resultSet.getString("titulo"),
+                        resultSet.getString("editora"),
+                        resultSet.getInt("ano"),
+                        true);
+                livros.add(livro);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livros emprestados: " + e.getMessage());
+        }
+        return livros;
+    }
+
+    public ArrayList<Livro> readLivrosDisponiveis() {
+        ArrayList<Livro> livros = new ArrayList<>();
+        String sql = "SELECT * FROM livro WHERE emprestado = false";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Livro livro = new Livro(
+                        resultSet.getString("isbn"),
+                        resultSet.getString("autor"),
+                        resultSet.getString("titulo"),
+                        resultSet.getString("editora"),
+                        resultSet.getInt("ano"),
+                        false);
+                livros.add(livro);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livros disponíveis: " + e.getMessage());
+        }
+        return livros;
+    }
+
     public void update(Livro livro) {
         String sql = "UPDATE livro SET autor = ?, titulo = ?, editora = ?, ano = ?, emprestado = ? WHERE isbn = ?";
 

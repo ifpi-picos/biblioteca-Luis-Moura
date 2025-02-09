@@ -1,9 +1,13 @@
 package com.biblioteca;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
+import com.biblioteca.controller.EmprestimoController;
 import com.biblioteca.controller.LivroController;
 import com.biblioteca.controller.UsuarioController;
+import com.biblioteca.model.Emprestimo;
 import com.biblioteca.model.Livro;
 import com.biblioteca.model.Usuario;
 
@@ -11,6 +15,7 @@ public class App {
     private static final Scanner scanner = new Scanner(System.in);
     private static final UsuarioController usuarioController = new UsuarioController();
     private static final LivroController livroController = new LivroController();
+    private static final EmprestimoController emprestimoController = new EmprestimoController();
 
     public static void main(String[] args) {
         while (true) {
@@ -51,8 +56,18 @@ public class App {
                 case 10:
                     deletarLivro();
                     break;
+                case 11:
+                    realizarEmprestimo();
+                    break;
+                case 12:
+                    listarLivrosEmprestados();
+                    break;
+                case 13:
+                    listarLivrosDisponiveis();
+                    break;
+
                 default:
-                    System.out.println("Opção inválida. Tente novamente.");
+                    System.out.println("Opção inválida.");
             }
         }
     }
@@ -72,6 +87,9 @@ public class App {
         System.out.println("8. Listar livro por ISBN");
         System.out.println("9. Atualizar livro");
         System.out.println("10. Deletar livro");
+        System.out.println("11. Realizar empréstimo");
+        System.out.println("12. Listar livros emprestados");
+        System.out.println("13. Listar livros disponíveis");
         System.out.println("==============================");
     }
 
@@ -188,5 +206,57 @@ public class App {
         String isbn = lerLinha("Digite o ISBN do livro a ser deletado: ");
         livroController.deletarLivro(isbn);
         System.out.println("Livro deletado com sucesso!");
+    }
+
+    private static void realizarEmprestimo() {
+        System.out.println("\n=== Realizar Empréstimo ===");
+        int usuarioId = lerInteiro("Digite o ID do usuário: ");
+        String isbn = lerLinha("Digite o ISBN do livro: ");
+
+        // Busca o livro pelo ISBN
+        Livro livro = livroController.listarLivroPorISBN(isbn);
+        if (livro == null) {
+            System.out.println("Livro não encontrado.");
+            return;
+        }
+        if (livro.getEmprestado()) {
+            System.out.println("Livro já está emprestado.");
+            return;
+        }
+
+        // Busca o usuário pelo ID
+        Usuario usuario = usuarioController.listarUsuarioPorId(usuarioId);
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
+
+        // Define a data do empréstimo (hoje) e calcula a data de devolução
+        Date dataEmprestimo = new Date();
+        int dias = lerInteiro("Digite o número de dias para empréstimo: ");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dataEmprestimo);
+        cal.add(Calendar.DAY_OF_MONTH, dias);
+        Date dataDevolucao = cal.getTime();
+
+        // Cria o empréstimo e registra
+        Emprestimo emprestimo = new Emprestimo(dataEmprestimo, dataDevolucao, usuario, livro);
+        emprestimoController.realizarEmprestimo(emprestimo);
+
+        // Atualiza o status do livro para emprestado
+        livro.setEmprestado(true);
+        livroController.atualizarLivro(livro);
+
+        System.out.println("Empréstimo realizado com sucesso!");
+    }
+
+    private static void listarLivrosEmprestados() {
+        System.out.println("\n=== Livros Emprestados ===");
+        livroController.listarLivrosEmprestados();
+    }
+
+    private static void listarLivrosDisponiveis() {
+        System.out.println("\n=== Livros Disponíveis ===");
+        livroController.listarLivrosDisponiveis();
     }
 }

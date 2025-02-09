@@ -27,6 +27,28 @@ public class LivroController {
         }
     }
 
+    public void listarLivrosEmprestados() {
+        ArrayList<Livro> livros = livroDao.readLivrosEmprestados();
+        System.out.println("\n=== Livros Emprestados ===");
+        for (Livro livro : livros) {
+            System.out.println("Título: " + livro.getTitulo());
+            System.out.println("ISBN: " + livro.getISBN());
+            System.out.println("Autor: " + livro.getAutor());
+            System.out.println("--------------------------");
+        }
+    }
+
+    public void listarLivrosDisponiveis() {
+        ArrayList<Livro> livros = livroDao.readLivrosDisponiveis();
+        System.out.println("\n=== Livros Disponíveis ===");
+        for (Livro livro : livros) {
+            System.out.println("Título: " + livro.getTitulo());
+            System.out.println("ISBN: " + livro.getISBN());
+            System.out.println("Autor: " + livro.getAutor());
+            System.out.println("--------------------------");
+        }
+    }
+
     public Livro listarLivroPorISBN(String ISBN) {
         return livroDao.readByISBN(ISBN);
     }

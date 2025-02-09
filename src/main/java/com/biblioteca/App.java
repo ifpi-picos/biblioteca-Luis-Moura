@@ -65,6 +65,9 @@ public class App {
                 case 13:
                     listarLivrosDisponiveis();
                     break;
+                case 14:
+                    devolverLivro();
+                    break;
 
                 default:
                     System.out.println("Opção inválida.");
@@ -90,6 +93,7 @@ public class App {
         System.out.println("11. Realizar empréstimo");
         System.out.println("12. Listar livros emprestados");
         System.out.println("13. Listar livros disponíveis");
+        System.out.println("14. Devolver livro");
         System.out.println("==============================");
     }
 
@@ -343,5 +347,24 @@ public class App {
     private static void listarLivrosDisponiveis() {
         System.out.println("\n=== Livros Disponíveis ===");
         livroController.listarLivrosDisponiveis();
+    }
+
+    private static  void devolverLivro() {
+        System.out.println("\n=== Devolver Livro ===");
+        String isbn = lerLinha("Digite o ISBN do livro a ser devolvido: ");
+        Livro livro = livroController.listarLivroPorISBN(isbn);
+
+        if (livro == null) {
+            System.out.println("Livro não encontrado.");
+            return;
+        }
+        if (!livro.getEmprestado()) {
+            System.out.println("Livro não está emprestado.");
+            return;
+        }
+
+        livro.setEmprestado(false);
+        livroController.atualizarLivro(livro);
+        System.out.println("Livro devolvido com sucesso!");
     }
 }

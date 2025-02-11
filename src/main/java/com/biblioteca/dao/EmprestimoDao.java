@@ -13,7 +13,7 @@ import com.biblioteca.model.Usuario;
 
 public class EmprestimoDao {
     public void create(Emprestimo emprestimo) {
-        String sql = "INSERT INTO emprestimo (dataemprestimo, datadevolucao, usuario_id, livro_isbn) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO emprestimo (data_emprestimo, data_devolucao, usuario_id, livro_isbn) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // Converte java.util.Date para java.sql.Date

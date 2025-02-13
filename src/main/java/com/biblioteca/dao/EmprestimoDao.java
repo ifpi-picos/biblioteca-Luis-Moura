@@ -12,10 +12,15 @@ import com.biblioteca.model.Livro;
 import com.biblioteca.model.Usuario;
 
 public class EmprestimoDao {
-    public void create(Emprestimo emprestimo) {
+    private final Connection connection;
+
+    public EmprestimoDao(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void create(Emprestimo emprestimo) throws SQLException {
         String sql = "INSERT INTO emprestimo (data_emprestimo, data_devolucao, usuario_id, livro_isbn) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // Converte java.util.Date para java.sql.Date
             preparedStatement.setDate(1, new java.sql.Date(emprestimo.getDataEmprestimo().getTime()));
             preparedStatement.setDate(2, new java.sql.Date(emprestimo.getDataDevolucao().getTime()));
@@ -24,20 +29,17 @@ public class EmprestimoDao {
 
             preparedStatement.executeUpdate();
 
-        } catch (SQLException e) {
-            System.err.println("Erro ao cadastrar empréstimo: " + e.getMessage());
         }
     }
 
-    public ArrayList<Emprestimo> readAll() {
+    public ArrayList<Emprestimo> readAll() throws SQLException {
         ArrayList<Emprestimo> emprestimos = new ArrayList<>();
         String sql = "SELECT * FROM emprestimo";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            UsuarioDao usuarioDao = new UsuarioDao();
-            LivroDao livroDao = new LivroDao();
+            UsuarioDao usuarioDao = new UsuarioDao(connection);
+            LivroDao livroDao = new LivroDao(connection);
 
             while (resultSet.next()) {
                 java.sql.Date dataEmprestimoSql = resultSet.getDate("data_emprestimo");
@@ -55,8 +57,6 @@ public class EmprestimoDao {
                         livro);
                 emprestimos.add(emprestimo);
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao listar empréstimos: " + e.getMessage());
         }
         return emprestimos;
     }

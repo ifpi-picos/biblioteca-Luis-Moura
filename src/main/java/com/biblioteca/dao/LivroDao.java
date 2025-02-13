@@ -11,10 +11,15 @@ import com.biblioteca.model.Livro;
 
 public class LivroDao {
 
-    public void create(Livro livro) {
+    private Connection connection;
+
+    public LivroDao(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void create(Livro livro) throws SQLException {
         String sql = "INSERT INTO livro (isbn, autor, titulo, editora, ano, emprestado) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, livro.getISBN());
             preparedStatement.setString(2, livro.getAutor());
@@ -24,17 +29,14 @@ public class LivroDao {
             preparedStatement.setBoolean(6, livro.getEmprestado());
             preparedStatement.executeUpdate();
 
-        } catch (SQLException e) {
-            System.err.println("Erro ao cadastrar livro: " + e.getMessage());
         }
     }
 
-    public ArrayList<Livro> read() {
+    public ArrayList<Livro> read() throws SQLException {
         ArrayList<Livro> livros = new ArrayList<>();
         String sql = "SELECT * FROM livro";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -48,20 +50,16 @@ public class LivroDao {
                 );
                 livros.add(livro);
             }
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao listar livros: " + e.getMessage());
         }
 
         return livros;
     }
 
-    public Livro readByISBN(String ISBN) {
+    public Livro readByISBN(String ISBN) throws SQLException {
         Livro livro = null;
         String sql = "SELECT * FROM livro WHERE isbn = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, ISBN);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -77,18 +75,15 @@ public class LivroDao {
                 }
             }
 
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar livro por ISBN: " + e.getMessage());
         }
 
         return livro;
     }
 
-    public ArrayList<Livro> readLivrosEmprestados() {
+    public ArrayList<Livro> readLivrosEmprestados() throws SQLException {
         ArrayList<Livro> livros = new ArrayList<>();
         String sql = "SELECT * FROM livro WHERE emprestado = true";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -101,17 +96,15 @@ public class LivroDao {
                         true);
                 livros.add(livro);
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao listar livros emprestados: " + e.getMessage());
         }
+
         return livros;
     }
 
-    public ArrayList<Livro> readLivrosDisponiveis() {
+    public ArrayList<Livro> readLivrosDisponiveis() throws SQLException {
         ArrayList<Livro> livros = new ArrayList<>();
         String sql = "SELECT * FROM livro WHERE emprestado = false";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -124,17 +117,15 @@ public class LivroDao {
                         false);
                 livros.add(livro);
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao listar livros disponíveis: " + e.getMessage());
         }
+
         return livros;
     }
 
-    public void update(Livro livro) {
+    public void update(Livro livro) throws SQLException {
         String sql = "UPDATE livro SET autor = ?, titulo = ?, editora = ?, ano = ?, emprestado = ? WHERE isbn = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, livro.getAutor());
             preparedStatement.setString(2, livro.getTitulo());
@@ -144,22 +135,17 @@ public class LivroDao {
             preparedStatement.setString(6, livro.getISBN());
             preparedStatement.executeUpdate();
 
-        } catch (SQLException e) {
-            System.err.println("Erro ao atualizar livro: " + e.getMessage());
         }
     }
 
-    public void delete(String isbn) {
+    public void delete(String isbn) throws SQLException {
         String sql = "DELETE FROM livro WHERE isbn = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, isbn);
             preparedStatement.executeUpdate();
 
-        } catch (SQLException e) {
-            System.err.println("Erro ao deletar livro: " + e.getMessage());
         }
     }
 }

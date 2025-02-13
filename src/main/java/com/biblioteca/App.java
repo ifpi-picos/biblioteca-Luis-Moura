@@ -1,9 +1,12 @@
 package com.biblioteca;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
+import com.biblioteca.connection.DatabaseConnection;
 import com.biblioteca.controller.EmprestimoController;
 import com.biblioteca.controller.LivroController;
 import com.biblioteca.controller.UsuarioController;
@@ -11,67 +14,78 @@ import com.biblioteca.model.Emprestimo;
 import com.biblioteca.model.Livro;
 import com.biblioteca.model.Usuario;
 
+//tirar a duvida com jesiel sobre o por que não poder deletar um usuário depois dele já fazer o emprestimo
+
 public class App {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final UsuarioController usuarioController = new UsuarioController();
-    private static final LivroController livroController = new LivroController();
-    private static final EmprestimoController emprestimoController = new EmprestimoController();
+    private static UsuarioController usuarioController;
+    private static LivroController livroController;
+    private static EmprestimoController emprestimoController;
 
     public static void main(String[] args) {
-        while (true) {
-            exibirMenu();
-            int opcao = lerInteiro("Escolha uma opção: ");
-            switch (opcao) {
-                case 0:
-                    System.out.println("Saindo...");
-                    scanner.close();
-                    return;
-                case 1:
-                    cadastrarUsuario();
-                    break;
-                case 2:
-                    listarUsuarios();
-                    break;
-                case 3:
-                    listarUsuarioPorId();
-                    break;
-                case 4:
-                    atualizarUsuario();
-                    break;
-                case 5:
-                    deletarUsuario();
-                    break;
-                case 6:
-                    cadastrarLivro();
-                    break;
-                case 7:
-                    listarLivros();
-                    break;
-                case 8:
-                    listarLivroPorISBN();
-                    break;
-                case 9:
-                    atualizarLivro();
-                    break;
-                case 10:
-                    deletarLivro();
-                    break;
-                case 11:
-                    realizarEmprestimo();
-                    break;
-                case 12:
-                    listarLivrosEmprestados();
-                    break;
-                case 13:
-                    listarLivrosDisponiveis();
-                    break;
-                case 14:
-                    devolverLivro();
-                    break;
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            usuarioController = new UsuarioController(connection);
+            livroController = new LivroController(connection);
+            emprestimoController = new EmprestimoController(connection);
 
-                default:
-                    System.out.println("Opção inválida.");
+            while (true) {
+                exibirMenu();
+                int opcao = lerInteiro("Escolha uma opção: ");
+                switch (opcao) {
+                    case 0:
+                        System.out.println("Saindo...");
+                        scanner.close();
+                        return;
+                    case 1:
+                        cadastrarUsuario();
+                        break;
+                    case 2:
+                        listarUsuarios();
+                        break;
+                    case 3:
+                        listarUsuarioPorId();
+                        break;
+                    case 4:
+                        atualizarUsuario();
+                        break;
+                    case 5:
+                        deletarUsuario();
+                        break;
+                    case 6:
+                        cadastrarLivro();
+                        break;
+                    case 7:
+                        listarLivros();
+                        break;
+                    case 8:
+                        listarLivroPorISBN();
+                        break;
+                    case 9:
+                        atualizarLivro();
+                        break;
+                    case 10:
+                        deletarLivro();
+                        break;
+                    case 11:
+                        realizarEmprestimo();
+                        break;
+                    case 12:
+                        listarLivrosEmprestados();
+                        break;
+                    case 13:
+                        listarLivrosDisponiveis();
+                        break;
+                    case 14:
+                        devolverLivro();
+                        break;
+
+                    default:
+                        System.out.println("Opção inválida.");
+                }
             }
+        } catch (SQLException e) {
+            System.err.println("Erro ao conectar com o banco de dados: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -138,78 +152,105 @@ public class App {
         }
 
         Usuario novoUsuario = new Usuario(null, nome, cpf, email);
-        usuarioController.cadastrarUsuario(novoUsuario);
-        System.out.println("\nUsuário cadastrado com sucesso!");
+
+        try {
+            usuarioController.cadastrarUsuario(novoUsuario);
+            System.out.println("\nUsuário cadastrado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar usuário: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private static void listarUsuarios() {
         System.out.println("\n=== Todos os Usuários ===");
-        usuarioController.listarUsuarios();
+        try {
+            usuarioController.listarUsuarios();
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar usuários: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private static void listarUsuarioPorId() {
         System.out.println("\n=== Listar Usuário por ID ===");
         int id = lerInteiro("Digite o ID do usuário: ");
-        Usuario usuario = usuarioController.listarUsuarioPorId(id);
 
-        if (usuario == null) {
-            System.out.println("Usuário não encontrado.");
-            return;
+        try {
+            Usuario usuario = usuarioController.listarUsuarioPorId(id);
+
+            if (usuario == null) {
+                System.out.println("Usuário não encontrado.");
+                return;
+            }
+
+            System.out.println("Nome: " + usuario.getNome());
+            System.out.println("CPF: " + usuario.getCpf());
+            System.out.println("Email: " + usuario.getEmail());
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar usuário: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        System.out.println("Nome: " + usuario.getNome());
-        System.out.println("CPF: " + usuario.getCpf());
-        System.out.println("Email: " + usuario.getEmail());
     }
 
     private static void atualizarUsuario() {
         System.out.println("\n=== Atualizar Usuário ===");
         int id = lerInteiro("Digite o ID do usuário a ser atualizado: ");
 
-        Usuario usuario = usuarioController.listarUsuarioPorId(id);
+        try {
+            Usuario usuario = usuarioController.listarUsuarioPorId(id);
 
-        if (usuario == null) {
-            System.out.println("Usuário não encontrado.");
-            return;
+            if (usuario == null) {
+                System.out.println("Usuário não encontrado.");
+                return;
+            }
+
+            String nome = lerLinha("Digite o novo nome do usuário: ");
+            String cpf = lerLinha("Digite o novo CPF do usuário: ");
+            String email = lerLinha("Digite o novo email do usuário: ");
+
+            if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty()) {
+                System.out.println("Preencha todos os campos!");
+                return;
+            }
+
+            if (!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
+                System.out.println("CPF inválido!");
+                return;
+            }
+
+            if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+                System.out.println("Email inválido!");
+                return;
+            }
+
+            Usuario usuarioAtualizado = new Usuario(null, nome, cpf, email);
+            usuarioController.atualizarUsuario(usuarioAtualizado, id);
+            System.out.println("Usuário atualizado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar usuário: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        String nome = lerLinha("Digite o novo nome do usuário: ");
-        String cpf = lerLinha("Digite o novo CPF do usuário: ");
-        String email = lerLinha("Digite o novo email do usuário: ");
-
-        if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty()) {
-            System.out.println("Preencha todos os campos!");
-            return;
-        }
-
-        if (!cpf.matches("[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}")) {
-            System.out.println("CPF inválido!");
-            return;
-        }
-
-        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-            System.out.println("Email inválido!");
-            return;
-        }
-
-        Usuario usuarioAtualizado = new Usuario(null, nome, cpf, email);
-        usuarioController.atualizarUsuario(usuarioAtualizado, id);
-        System.out.println("Usuário atualizado com sucesso!");
     }
 
     private static void deletarUsuario() {
         System.out.println("\n=== Deletar Usuário ===");
         int id = lerInteiro("Digite o ID do usuário a ser deletado: ");
 
-        Usuario usuario = usuarioController.listarUsuarioPorId(id);
+        try {
+            Usuario usuario = usuarioController.listarUsuarioPorId(id);
 
-        if (usuario == null) {
-            System.out.println("Usuário não encontrado.");
-            return;
+            if (usuario == null) {
+                System.out.println("Usuário não encontrado.");
+                return;
+            }
+
+            usuarioController.deletarUsuario(id);
+            System.out.println("Usuário deletado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar usuário: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        usuarioController.deletarUsuario(id);
-        System.out.println("Usuário deletado com sucesso!");
     }
 
     private static void cadastrarLivro() {
@@ -225,81 +266,107 @@ public class App {
             return;
         }
 
-        if (!isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
+        if (!isbn.matches("^\\d{3}-?\\d{2}-?\\d{3}-?\\d{4}-?\\d{1}$")) {
             System.out.println("ISBN inválido!");
             return;
         }
 
         Livro novoLivro = new Livro(isbn, autor, titulo, editora, ano, false);
-        livroController.cadastrarLivro(novoLivro);
-        System.out.println("Livro cadastrado com sucesso!");
+
+        try {
+            livroController.cadastrarLivro(novoLivro);
+            System.out.println("Livro cadastrado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar livro: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private static void listarLivros() {
         System.out.println("\n=== Todos os Livros ===");
-        livroController.listarLivros();
+        try {
+            livroController.listarLivros();
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livros: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private static void listarLivroPorISBN() {
         System.out.println("\n=== Listar Livro por ISBN ===");
         String isbn = lerLinha("Digite o ISBN do livro: ");
-        Livro livro = livroController.listarLivroPorISBN(isbn);
+        try {
+            Livro livro = livroController.listarLivroPorISBN(isbn);
 
-        if (livro == null) {
-            System.out.println("Livro não encontrado.");
-            return;
+            if (livro == null) {
+                System.out.println("Livro não encontrado.");
+                return;
+            }
+
+            System.out.println("Título: " + livro.getTitulo());
+            System.out.println("Autor: " + livro.getAutor());
+            System.out.println("Editora: " + livro.getEditora());
+            System.out.println("ISBN: " + livro.getISBN());
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livro: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        System.out.println("Título: " + livro.getTitulo());
-        System.out.println("Autor: " + livro.getAutor());
-        System.out.println("Editora: " + livro.getEditora());
-        System.out.println("ISBN: " + livro.getISBN());
     }
 
     private static void atualizarLivro() {
         System.out.println("\n=== Atualizar Livro ===");
         String isbn = lerLinha("Digite o ISBN do livro a ser atualizado: ");
 
-        Livro livro = livroController.listarLivroPorISBN(isbn);
+        try {
+            Livro livro = livroController.listarLivroPorISBN(isbn);
 
-        if (livro == null) {
-            System.out.println("Livro não encontrado.");
-            return;
+            if (livro == null) {
+                System.out.println("Livro não encontrado.");
+                return;
+            }
+
+            String autor = lerLinha("Digite o novo nome do autor: ");
+            String titulo = lerLinha("Digite o novo título do livro: ");
+            String editora = lerLinha("Digite o novo nome da editora: ");
+            int ano = lerInteiro("Digite o novo ano de lançamento do livro: ");
+
+            if (autor.isEmpty() || titulo.isEmpty() || editora.isEmpty()) {
+                System.out.println("Preencha todos os campos!");
+                return;
+            }
+
+            if (!isbn.matches("^\\d{3}-?\\d{2}-?\\d{3}-?\\d{4}-?\\d{1}$")) {
+                System.out.println("ISBN inválido!");
+                return;
+            }
+
+            Livro livroAtualizado = new Livro(isbn, autor, titulo, editora, ano, false);
+            livroController.atualizarLivro(livroAtualizado);
+            System.out.println("Livro atualizado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livro: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        String autor = lerLinha("Digite o novo nome do autor: ");
-        String titulo = lerLinha("Digite o novo título do livro: ");
-        String editora = lerLinha("Digite o novo nome da editora: ");
-        int ano = lerInteiro("Digite o novo ano de lançamento do livro: ");
-
-        if (autor.isEmpty() || titulo.isEmpty() || editora.isEmpty()) {
-            System.out.println("Preencha todos os campos!");
-            return;
-        }
-
-        if (!isbn.matches("^97[89]-?\\d{2,5}-?\\d{2,7}-?\\d{1,7}-?\\d$\n")) {
-            System.out.println("ISBN inválido!");
-            return;
-        }
-
-        Livro livroAtualizado = new Livro(isbn, autor, titulo, editora, ano, false);
-        livroController.atualizarLivro(livroAtualizado);
-        System.out.println("Livro atualizado com sucesso!");
     }
 
     private static void deletarLivro() {
         System.out.println("\n=== Deletar Livro ===");
         String isbn = lerLinha("Digite o ISBN do livro a ser deletado: ");
 
-        Livro livro = livroController.listarLivroPorISBN(isbn);
+        try {
+            Livro livro = livroController.listarLivroPorISBN(isbn);
 
-        if (livro == null) {
-            System.out.println("Livro não encontrado.");
-            return;
+            if (livro == null) {
+                System.out.println("Livro não encontrado.");
+                return;
+            }
+
+            livroController.deletarLivro(isbn);
+            System.out.println("Livro deletado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livro: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        livroController.deletarLivro(isbn);
-        System.out.println("Livro deletado com sucesso!");
     }
 
     private static void realizarEmprestimo() {
@@ -307,64 +374,86 @@ public class App {
         int usuarioId = lerInteiro("Digite o ID do usuário: ");
         String isbn = lerLinha("Digite o ISBN do livro: ");
 
-        Livro livro = livroController.listarLivroPorISBN(isbn);
-        if (livro == null) {
-            System.out.println("Livro não encontrado.");
-            return;
+        try {
+            Livro livro = livroController.listarLivroPorISBN(isbn);
+
+            if (livro == null) {
+                System.out.println("Livro não encontrado.");
+                return;
+            }
+            if (livro.getEmprestado()) {
+                System.out.println("Livro já está emprestado.");
+                return;
+            }
+
+            Usuario usuario = usuarioController.listarUsuarioPorId(usuarioId);
+            if (usuario == null) {
+                System.out.println("Usuário não encontrado.");
+                return;
+            }
+
+            Date dataEmprestimo = new Date();
+            int dias = lerInteiro("Digite o número de dias para empréstimo: ");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dataEmprestimo);
+            cal.add(Calendar.DAY_OF_MONTH, dias);
+            Date dataDevolucao = cal.getTime();
+
+            Emprestimo emprestimo = new Emprestimo(dataEmprestimo, dataDevolucao, usuario, livro);
+            emprestimoController.realizarEmprestimo(emprestimo);
+
+            livro.setEmprestado(true);
+            livroController.atualizarLivro(livro);
+
+            System.out.println("Empréstimo realizado com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livro: " + e.getMessage());
+            e.printStackTrace();
         }
-        if (livro.getEmprestado()) {
-            System.out.println("Livro já está emprestado.");
-            return;
-        }
-
-        Usuario usuario = usuarioController.listarUsuarioPorId(usuarioId);
-        if (usuario == null) {
-            System.out.println("Usuário não encontrado.");
-            return;
-        }
-
-        Date dataEmprestimo = new Date();
-        int dias = lerInteiro("Digite o número de dias para empréstimo: ");
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dataEmprestimo);
-        cal.add(Calendar.DAY_OF_MONTH, dias);
-        Date dataDevolucao = cal.getTime();
-
-        Emprestimo emprestimo = new Emprestimo(dataEmprestimo, dataDevolucao, usuario, livro);
-        emprestimoController.realizarEmprestimo(emprestimo);
-
-        livro.setEmprestado(true);
-        livroController.atualizarLivro(livro);
-
-        System.out.println("Empréstimo realizado com sucesso!");
     }
 
     private static void listarLivrosEmprestados() {
         System.out.println("\n=== Livros Emprestados ===");
-        livroController.listarLivrosEmprestados();
+        try {
+            livroController.listarLivrosEmprestados();
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livros emprestados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private static void listarLivrosDisponiveis() {
         System.out.println("\n=== Livros Disponíveis ===");
-        livroController.listarLivrosDisponiveis();
+        try {
+            livroController.listarLivrosDisponiveis();
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livros disponíveis: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private static  void devolverLivro() {
+    private static void devolverLivro() {
         System.out.println("\n=== Devolver Livro ===");
         String isbn = lerLinha("Digite o ISBN do livro a ser devolvido: ");
-        Livro livro = livroController.listarLivroPorISBN(isbn);
 
-        if (livro == null) {
-            System.out.println("Livro não encontrado.");
-            return;
-        }
-        if (!livro.getEmprestado()) {
-            System.out.println("Livro não está emprestado.");
-            return;
-        }
+        try {
+            Livro livro = livroController.listarLivroPorISBN(isbn);
 
-        livro.setEmprestado(false);
-        livroController.atualizarLivro(livro);
-        System.out.println("Livro devolvido com sucesso!");
+            if (livro == null) {
+                System.out.println("Livro não encontrado.");
+                return;
+            }
+            if (!livro.getEmprestado()) {
+                System.out.println("Livro não está emprestado.");
+                return;
+            }
+
+            livro.setEmprestado(false);
+            livroController.atualizarLivro(livro);
+            System.out.println("Livro devolvido com sucesso!");
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar livro: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

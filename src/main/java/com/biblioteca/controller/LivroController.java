@@ -3,20 +3,24 @@ package com.biblioteca.controller;
 import com.biblioteca.dao.LivroDao;
 import com.biblioteca.model.Livro;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class LivroController {
     private final LivroDao livroDao;
+    private final Connection connection;
 
-    public LivroController() {
-        this.livroDao = new LivroDao();
+    public LivroController(Connection connection) throws SQLException {
+        this.connection = connection;
+        this.livroDao = new LivroDao(connection);
     }
 
-    public void cadastrarLivro(Livro livro) {
+    public void cadastrarLivro(Livro livro) throws SQLException {
         livroDao.create(livro);
     }
 
-    public void listarLivros() {
+    public void listarLivros() throws SQLException {
         ArrayList<Livro> livros = livroDao.read();
         for (Livro livro : livros) {
             System.out.println("Título: " + livro.getTitulo());
@@ -27,7 +31,7 @@ public class LivroController {
         }
     }
 
-    public void listarLivrosEmprestados() {
+    public void listarLivrosEmprestados() throws SQLException {
         ArrayList<Livro> livros = livroDao.readLivrosEmprestados();
         System.out.println("\n=== Livros Emprestados ===");
         for (Livro livro : livros) {
@@ -38,7 +42,7 @@ public class LivroController {
         }
     }
 
-    public void listarLivrosDisponiveis() {
+    public void listarLivrosDisponiveis() throws SQLException {
         ArrayList<Livro> livros = livroDao.readLivrosDisponiveis();
         System.out.println("\n=== Livros Disponíveis ===");
         for (Livro livro : livros) {
@@ -49,15 +53,15 @@ public class LivroController {
         }
     }
 
-    public Livro listarLivroPorISBN(String ISBN) {
+    public Livro listarLivroPorISBN(String ISBN) throws SQLException {
         return livroDao.readByISBN(ISBN);
     }
 
-    public void atualizarLivro(Livro livro) {
+    public void atualizarLivro(Livro livro) throws SQLException {
         livroDao.update(livro);
     }
 
-    public void deletarLivro(String isbn) {
+    public void deletarLivro(String isbn) throws SQLException {
         livroDao.delete(isbn);
     }
 }
